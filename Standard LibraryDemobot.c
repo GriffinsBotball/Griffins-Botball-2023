@@ -1,4 +1,6 @@
 #include <kipr/wombat.h>
+
+// Change name of file to functions.c
 void turnDegrees(int deg) //Makes robot drive a set number of degrees either direction. Set Negative for left.
 {
   	cmpc(1);
