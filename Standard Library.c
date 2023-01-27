@@ -1,55 +1,5 @@
 #include <kipr/wombat.h>
-void turnDegrees(int deg) //Makes robot drive a set number of degrees either direction. Set Negative for left.
-{
-  	cmpc(1);
-    cmpc(0);
-    if (deg<0)
-    {
-    while(gmpc(0)<23*deg*-1)
-    {
-        motor(0,56);
-        motor(1,-1);
-    }
-    	ao();
-    }
-
-    else if (deg>0)
-        {
-            while(gmpc(1)<23*deg)
-        		{
-            	motor(1,56);
-            	motor(0,-1);
-        		}
-        	ao();
-        }
-}
-
-
-void driveDistance(int dis) //Makes robot drive forward for a set number of inches.
-{
-
-
-    cmpc(0);
-    cmpc(1);
-    if (dis>0)
-    {
-    while(gmpc(1)<200*dis && gmpc(0)<200*dis)
-    {
-        motor(0,50);
-        motor(1,50);
-    }
-    ao();
-    }
-    else if (dis<0)
-    {
-        while(gmpc(1)>200*dis && gmpc(0)>200*dis)
-        {
-            motor(0,-50);
-            motor(1,-50);
-        }
-        ao();
-	}
-}
+#include <sys/time.h>
 
 void slowServo(int servo, int endAngle, int speed) //Slowly controls the servo to move to the correct position at the correct speed.
 {
@@ -81,64 +31,73 @@ void slowServo(int servo, int endAngle, int speed) //Slowly controls the servo t
     }
 }
 
-
-void squareupForward()
-{
-	while(digital(0) == 0 && digital(1) == 0)
-    {
-
-    if(digital(0)==0)
-    {
-    	motor(0, 25);
-    }
-    if(digital(3)==0)
-    {
-        motor(1, 25);
-    }
-    }
-}
-
-void squareupReverse()
-{
-	while(digital(4) == 0 && digital(5) == 0)
-    {
-
-    if(digital(0)==0)
-    {
-    	motor(0, -25);
-    }
-    if(digital(3)==0)
-    {
-        motor(1, -25);
-    }
-    }
-}
-
-
-void lineFollow()
-{
-
- int X = 2000;
-
-    while((X) >= 1)
-    {
-   	 if(analog(0) >= 3850)
-   		{
-        motor(0, 25);
-        motor(1, 50);
-     	}
-   	 if(analog(0) < 3850)
-    	{
-        motor(0, 50);
-    	motor(1, 25);
-     	}
-
-    }
-}
-
-
 void startup()
 {
   wait_for_light(2);
   shut_down_in(115);
+}
+
+
+void turnDegrees(int deg)
+{
+   	set_create_total_angle(0);
+	if (deg>0)
+    {
+    while (get_create_total_angle() >= deg*-1)
+    	{
+    	create_drive_direct(100,-100);
+    	}
+    ao();
+    }
+    else if (deg<0)
+    {
+        while (get_create_total_angle() <= deg)
+    	{
+    	create_drive_direct(-100,100);
+    	}
+    ao();
+    }
+}
+
+void line_follow(int tophat_port, int threshold, int milliseconds) {
+    struct timeval start, stop;
+    gettimeofday(&start, NULL);
+    gettimeofday(&stop, NULL);
+    int diff_ms = (stop.tv_sec - start.tv_sec)*1000 + (stop.tv_usec - start.tv_usec)/1000;
+
+    while(diff_ms<=milliseconds){
+        while(analog(tophat_port) < threshold && diff_ms<=milliseconds) //on white
+        {
+
+            create_drive_direct(100,0);
+            gettimeofday(&stop, NULL);
+        	diff_ms = (stop.tv_sec - start.tv_sec)*1000 + (stop.tv_usec - start.tv_usec)/1000;
+        }
+        while(analog(tophat_port) > threshold  && diff_ms<=milliseconds) //on black
+        {
+
+            create_drive_direct(0,100);
+            gettimeofday(&stop, NULL);
+        	diff_ms = (stop.tv_sec - start.tv_sec)*1000 + (stop.tv_usec - start.tv_usec)/1000;
+        }
+	create_drive_direct(0,0);
+    msleep(100);
+    }
+}
+
+
+
+void lineFollowCliff(int threshold, int milliseconds) {
+	int speed = 250;
+    struct timeval start, stop;
+    gettimeofday(&start, NULL);
+    gettimeofday(&stop, NULL);
+ 	int diff_ms = (stop.tv_sec - start.tv_sec)*1000 + (stop.tv_usec - start.tv_usec)/1000;
+    while (diff_ms<=milliseconds)
+    {
+        if(get_create_lfcliff_amt() < threshold)
+        {create_drive_direct(0.5*speed, speed);}
+        else
+        {create_drive_direct(speed, 0.5*speed);}
+	}
 }

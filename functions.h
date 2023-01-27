@@ -1,7 +1,4 @@
-void turnDegrees(int deg);
-void forwardDrive(int dis);
-//void slowClose(int openDistance, int speed);
-void squareupForward();
-void squareupReverse();
-void lineFollow();
+void slowServo(int openDistance, int speed);
 void startup();
+void turnDegrees();
+void line_follow();
