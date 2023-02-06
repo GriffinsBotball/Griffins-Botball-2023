@@ -101,3 +101,26 @@ void lineFollowCliff(int threshold, int milliseconds) {
         {create_drive_direct(speed, 0.5*speed);}
 	}
 }
+
+void driveDistance(int dis) //Makes robot drive forward for a set number of inches.
+{
+    set_create_distance(0);
+
+
+    if (dis>0)
+    {
+      while(get_create_distance() < dis)
+        {
+          create_drive_direct(50,50);
+        }
+      ao();
+    }
+    else if (dis<0)
+      {
+      while(get_create_distance() > dis) // Gets current distance
+        {
+            create_drive_direct(-50,-50);
+        }
+      ao();
+	     }
+}
