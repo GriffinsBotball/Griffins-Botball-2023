@@ -109,17 +109,17 @@ void driveDistance(int dis) //Makes robot drive forward for a set number of inch
 
     if (dis>0)
     {
-      while(get_create_distance() < dis)
+      while(get_create_distance() > -(dis))
         {
-          create_drive_direct(50,50);
+          create_drive_direct(-50,-50);
         }
       ao();
     }
     else if (dis<0)
       {
-      while(get_create_distance() > dis) // Gets current distance
+      while(get_create_distance() < -(dis)) // Gets current distance
         {
-            create_drive_direct(-50,-50);
+            create_drive_direct(50,50);
         }
       ao();
 	     }
