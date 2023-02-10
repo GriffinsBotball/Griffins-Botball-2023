@@ -1,5 +1,5 @@
 void turnDegrees(int deg);
-void forwardDrive(int dis);
+void driveDistance(int dis);
 void slowServo(int servo, int endAngle, int speed);
 void squareupForward();
 void squareupReverse();
